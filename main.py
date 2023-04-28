@@ -2,10 +2,8 @@ import pygame as pg
 from dijkstra import *
 from paint import Paint, Colors
 import sys
-
-
-class PointRect:
-    def __init__(self, x, y, col):
+import time
+from pprint import pprint
 
 
 class Interface:
@@ -19,11 +17,11 @@ class Interface:
 
         self.colors = Colors
         self.paint = Paint(self.sc, self.rect)
-        self.alg = Dijkstra()
 
     def loop(self):
         x, y = 0, 0
         self.clear()
+        clock = pg.time.Clock()
 
         fldraw = False
 
@@ -66,14 +64,29 @@ class Interface:
                     case pg.KEYDOWN if event.key == pg.K_3:
                         fldel = self.del_check(fldel, flstart, flend)
 
-                    case pg.KEYDOWN if event.key == pg.K_DELETE or pg.K_BACKSPACE:
+                    case pg.KEYDOWN if event.key == pg.K_BACKSPACE:
                         self.clear()
+
+                    case pg.KEYDOWN if event.key == pg.K_TAB:
+                        G, start, finish = self.sсan_window(sleep=0.001)
+
+                        for point in start:
+                            pprint(G)
+                            dijkstra = Dijkstra(G, point)
+                            dijkstra.start_algorithm()
+                            for fin in finish:
+                                stak = dijkstra.start_finish(fin)
+                                print(stak)
+
+                                for p in stak:
+                                    self.paint(*p, self.colors.GREEN)
 
             x, y = x // self.rect * self.rect, y // self.rect * self.rect
 
             if fldel and fldraw:
                 self.paint(x, y, self.colors.GRAY)
-                del self.hash_map[(x, y)]
+                if (x, y) in self.hash_map:
+                    del self.hash_map[(x, y)]
 
             elif flend and fldraw:
                 self.paint(x, y, self.colors.BLUE)
@@ -87,14 +100,49 @@ class Interface:
                 self.paint(x, y, self.colors.RED)
                 self.hash_map[(x, y)] = "wall"
 
-    def skan_window(self,start):
-        starts = [k for k in self.hash_map if k == self.colors.YELLOW]
+            clock.tick(120)
+
+    def sсan_window(self, sleep=0):
+        starts = [
+            k for k in self.hash_map
+            if self.hash_map.get(k, None) == "start"
+        ]
+        finish = [
+            k for k in self.hash_map
+            if self.hash_map.get(k, None) == "end"
+        ]
         FIFO = deque(starts)
         data = CreateData()
-        while FIFO:
-            point = FIFO.popleft()
-            data(point)
+        temp = (
+            (0, self.rect),
+            (0, -self.rect),
+            (self.rect, 0),
+            (-self.rect, 0)
+        )
 
+        while len(FIFO):
+            point = FIFO.popleft()
+
+            if point not in self.hash_map:
+                self.paint(*point, self.colors.WHITE)
+
+            # if self.hash_map[point] == self.colors.BLUE or self.colors.RED:
+
+            for a, b in temp:
+
+                p = (point[0] + a, point[1] + b)
+                if any([
+                    self.size < p[0], 0 > p[0],
+                    self.size < p[1], 0 > p[1]
+                ]):
+                    continue
+
+                if not (p in data.G) and self.hash_map.get(p, None) is None:
+                    FIFO.append(p)
+                    data(point, p)
+                    time.sleep(sleep)
+
+        return data.G, starts, finish
 
     def start_check(self, fl):
         if fl:

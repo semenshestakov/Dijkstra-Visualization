@@ -8,15 +8,18 @@ class CreateData:
     def __call__(self,p1,p2):
         if self.G.get(p1,False) is False:
             self.G[p1] = {}
-            self.G[p1][p2] = 1
-        else:
-            self.G[p1][p2] = 1
+
+        if self.G.get(p2,False) is False:
+            self.G[p2] = {}
+
+        self.G[p2][p1] = 1
+        self.G[p1][p2] = 1
 
 
 
 
 
-class DijkstraOnFIFO:
+class Dijkstra:
     def __init__(self, G, start):
         self.G = G
         self.Gm = {k: None for k in G}
