@@ -22,7 +22,7 @@ class CreateData:
 class Dijkstra:
     def __init__(self, G, start):
         self.G = G
-        self.Gm = {k: None for k in G}
+        self.Gm = {k: None for k in self.G}
         self.Gm[start] = 0
         self.drque = deque([start])
         self.start = start
@@ -46,9 +46,13 @@ class Dijkstra:
         stak.append(finish)
         if self.start == finish:
             return stak
-        for key, value in self.G[finish].items():
-            if self.Gm[finish] - value == self.Gm[key]:
-                return self.start_finish(key, stak)
+        if finish in self.G:
+            for key, value in self.G[finish].items():
+                print(key,value,self.Gm)
+
+                print(self.Gm[finish] ,value ,self.Gm[key])
+                if self.Gm[finish] - value == self.Gm[key]:
+                    return self.start_finish(key, stak)
 
 
 

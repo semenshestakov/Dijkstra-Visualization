@@ -69,17 +69,24 @@ class Interface:
 
                     case pg.KEYDOWN if event.key == pg.K_TAB:
                         G, start, finish = self.sсan_window(sleep=0.001)
+                        pprint(G)
+                        print(start)
+                        print(finish)
 
                         for point in start:
-                            pprint(G)
+                            print(point,"point")
                             dijkstra = Dijkstra(G, point)
                             dijkstra.start_algorithm()
-                            for fin in finish:
-                                stak = dijkstra.start_finish(fin)
-                                print(stak)
 
+                            for fin in finish:
+                                print(fin,"finish")
+                                stak = dijkstra.start_finish(fin)
+                                print(stak,"stak")
+                                if stak is None:
+                                    continue
                                 for p in stak:
-                                    self.paint(*p, self.colors.GREEN)
+                                    if p not in self.hash_map:
+                                        self.paint(*p, self.colors.GREEN)
 
             x, y = x // self.rect * self.rect, y // self.rect * self.rect
 
@@ -126,18 +133,18 @@ class Interface:
             if point not in self.hash_map:
                 self.paint(*point, self.colors.WHITE)
 
-            # if self.hash_map[point] == self.colors.BLUE or self.colors.RED:
-
             for a, b in temp:
 
                 p = (point[0] + a, point[1] + b)
                 if any([
-                    self.size < p[0], 0 > p[0],
-                    self.size < p[1], 0 > p[1]
+                    self.size <= p[0], 0 > p[0],
+                    self.size <= p[1], 0 > p[1]
                 ]):
                     continue
 
-                if not (p in data.G) and self.hash_map.get(p, None) is None:
+                if not (p in data.G) and \
+                        (self.hash_map.get(p, None) == None or "end" ) and \
+                        self.hash_map.get(p, None) != "wall":
                     FIFO.append(p)
                     data(point, p)
                     time.sleep(sleep)
@@ -174,5 +181,5 @@ class Interface:
 
 
 if __name__ == '__main__':
-    interface = Interface(400, 20)
+    interface = Interface(300, 100)
     interface.loop()
