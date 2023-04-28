@@ -70,18 +70,13 @@ class Interface:
                     case pg.KEYDOWN if event.key == pg.K_TAB:
                         G, start, finish = self.sсan_window(sleep=0.001)
                         pprint(G)
-                        print(start)
-                        print(finish)
 
                         for point in start:
-                            print(point,"point")
                             dijkstra = Dijkstra(G, point)
                             dijkstra.start_algorithm()
 
                             for fin in finish:
-                                print(fin,"finish")
                                 stak = dijkstra.start_finish(fin)
-                                print(stak,"stak")
                                 if stak is None:
                                     continue
                                 for p in stak:
@@ -126,10 +121,13 @@ class Interface:
             (self.rect, 0),
             (-self.rect, 0)
         )
+        viz = set()
 
         while len(FIFO):
             point = FIFO.popleft()
-
+            print(point)
+            if point in viz:
+                continue
             if point not in self.hash_map:
                 self.paint(*point, self.colors.WHITE)
 
@@ -142,13 +140,14 @@ class Interface:
                 ]):
                     continue
 
-                if not (p in data.G) and \
-                        (self.hash_map.get(p, None) == None or "end" ) and \
+                if not (p in viz) and \
+                        (self.hash_map.get(p, None) == None or "end") and \
                         self.hash_map.get(p, None) != "wall":
                     FIFO.append(p)
                     data(point, p)
-                    time.sleep(sleep)
+                    # time.sleep(sleep)
 
+            viz.add(point)
         return data.G, starts, finish
 
     def start_check(self, fl):
@@ -181,5 +180,5 @@ class Interface:
 
 
 if __name__ == '__main__':
-    interface = Interface(300, 100)
+    interface = Interface(400, 20)
     interface.loop()

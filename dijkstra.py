@@ -1,22 +1,20 @@
 from collections import deque
 from paint import Colors
 
+
 class CreateData:
     def __init__(self):
         self.G = {}
 
-    def __call__(self,p1,p2):
-        if self.G.get(p1,False) is False:
+    def __call__(self, p1, p2):
+        if self.G.get(p1, False) is False:
             self.G[p1] = {}
 
-        if self.G.get(p2,False) is False:
+        if self.G.get(p2, False) is False:
             self.G[p2] = {}
 
         self.G[p2][p1] = 1
         self.G[p1][p2] = 1
-
-
-
 
 
 class Dijkstra:
@@ -48,11 +46,5 @@ class Dijkstra:
             return stak
         if finish in self.G:
             for key, value in self.G[finish].items():
-                print(key,value,self.Gm)
-
-                print(self.Gm[finish] ,value ,self.Gm[key])
                 if self.Gm[finish] - value == self.Gm[key]:
                     return self.start_finish(key, stak)
-
-
-

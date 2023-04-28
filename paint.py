@@ -17,12 +17,11 @@ class Paint:
         self.sc = sc
         self.rect = rect
 
-    def __call__(self, x, y, col,update=True):
-
+    def __call__(self, x, y, col, update=True):
         rect = pg.draw.rect(
             self.sc,
             col,
-            (x, y, self.rect - 2, self.rect -2 )
+            (x, y, self.rect - 2, self.rect - 1)
         )
         if update:
             pg.display.update(rect)
