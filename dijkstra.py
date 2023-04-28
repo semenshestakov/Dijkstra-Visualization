@@ -46,5 +46,8 @@ class Dijkstra:
             return stak
         if finish in self.G:
             for key, value in self.G[finish].items():
-                if self.Gm[finish] - value == self.Gm[key]:
-                    return self.start_finish(key, stak)
+                try:
+                    if self.Gm[finish] - value == self.Gm[key]:
+                        return self.start_finish(key, stak)
+                except:
+                    pass
