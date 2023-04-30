@@ -3,8 +3,8 @@ from dijkstra import *
 from paint import Paint, Colors
 import sys
 import time
-from pprint import pprint
-
+import numpy as np
+from graphs import Graph
 
 class Interface:
     def __init__(self, size=400, size_rect=10):
@@ -46,6 +46,9 @@ class Interface:
                     case pg.MOUSEBUTTONUP:
                         fldraw = False
 
+                    case pg.KEYDOWN if event.key == pg.K_CAPSLOCK:
+                        self.generate_map()
+
                     case pg.KEYDOWN if event.key == pg.K_1:
                         flstart = self.start_check(flstart)
                         flwall = not flwall
@@ -68,12 +71,15 @@ class Interface:
                         self.clear()
 
                     case pg.KEYDOWN if event.key == pg.K_TAB:
-                        G, start, finish = self.sсan_window(sleep=0.001)
-                        pprint(G)
+                        G, start, finish = self.sсan_window(sleep=0)
+
 
                         for point in start:
                             dijkstra = Dijkstra(G, point)
-                            dijkstra.start_algorithm()
+                            try:
+                                dijkstra.start_algorithm()
+                            except KeyError:
+                                continue
 
                             for fin in finish:
                                 stak = dijkstra.start_finish(fin)
@@ -125,7 +131,6 @@ class Interface:
 
         while len(FIFO):
             point = FIFO.popleft()
-            print(point)
             if point in viz:
                 continue
             if point not in self.hash_map:
@@ -145,9 +150,10 @@ class Interface:
                         self.hash_map.get(p, None) != "wall":
                     FIFO.append(p)
                     data(point, p)
-                    # time.sleep(sleep)
+                    time.sleep(sleep)
 
             viz.add(point)
+
         return data.G, starts, finish
 
     def start_check(self, fl):
@@ -178,7 +184,30 @@ class Interface:
 
         pg.display.update()
 
+    def generate_map(self,v0=0.2,v1=0.7,v2=0.8):
+        self.clear()
+        size = self.size // self.rect
+
+        gen_map = np.random.normal(size=(size, size))
+        m1, m2 = np.max(gen_map), np.min(gen_map)
+
+        for i in range(size):
+            for j in range(size):
+                x, y = i * self.rect, j * self.rect
+                if gen_map[i][j] < m2 * v0:
+                    self.paint(x, y, self.colors.RED)
+                    self.hash_map[(x, y)] = "wall"
+                elif gen_map[i][j] > v2*m1:
+                    self.paint(x, y, self.colors.YELLOW)
+                    self.hash_map[(x, y)] = "start"
+
+                elif gen_map[i][j] > v1 * m1:
+                    self.paint(x, y, self.colors.BLUE)
+                    self.hash_map[(x, y)] = "end"
+                else:
+                    self.paint(x, y, self.colors.GRAY)
+
 
 if __name__ == '__main__':
-    interface = Interface(400, 20)
+    interface = Interface(600, 20)
     interface.loop()
