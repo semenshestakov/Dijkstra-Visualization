@@ -22,18 +22,15 @@ class Paint:
         rect = pg.draw.rect(
             self.sc,
             col,
-            (x, y, self.rect - 2, self.rect - 1)
+            (x, y, self.rect - 1, self.rect - 1)
         )
         if update:
             pg.display.update(rect)
 
     def dijkstra_paint(self, G, start, finish, hash_map, gen=False):
         gen = Dijkstra.dijkstra_gen(G, start, finish)
-        staks = [i for i in gen]
+        staks = [i[-1] for i in gen]
         for s in staks:
             for p in s:
                 if p not in hash_map:
-                    self(*p, Colors.GREEN)
-
-
-
+                    self(*p, Colors.GREEN, False)

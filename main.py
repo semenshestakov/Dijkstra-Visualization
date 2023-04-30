@@ -1,8 +1,11 @@
+import matplotlib.pyplot as plt
+
 from paint import *
 import sys
 import time
 import numpy as np
 from graphs import Graph
+from classcsv import *
 
 
 class Interface:
@@ -14,6 +17,7 @@ class Interface:
         self.sc = pg.display.set_mode((size, size))
         pg.display.set_caption("Dijkstra on Pygame - start")
 
+        self.df = CSV("data")
         self.colors = Colors
         self.paint = Paint(self.sc, self.rect)
 
@@ -71,18 +75,20 @@ class Interface:
 
                     case pg.KEYDOWN if event.key == pg.K_TAB:
                         G, start, finish = self.sсan_window(sleep=0)
-                        graph = Graph(G, start, finish)
 
-                        graph.graph_map_visualization()
-                        graph.start_finish_map_visualization()
                         gen = Dijkstra.dijkstra_gen(G, start, finish)
-                        res = [i for i in gen]
-                        graph.stak_map(res,self.rect,self.size // self.rect)
-                        graph.stak_map_visualization()
+                        res = [i[-1] for i in gen]
 
+                        graph = Graph(G, start, finish, res, self.rect, self.size // self.rect)
+                        # graph.graph_map_visualization()
+                        # graph.start_finish_map_visualization()
+                        # graph.stak_map_visualization()
 
-                        self.paint.dijkstra_paint(G,start,finish,self.hash_map)
+                        g, p, s = graph.return_data()
+                        self.df.write(g, p, s)
 
+                        self.paint.dijkstra_paint(G, start, finish, self.hash_map)
+                        pg.display.update()
             x, y = x // self.rect * self.rect, y // self.rect * self.rect
 
             if fldel and fldraw:
@@ -144,7 +150,7 @@ class Interface:
                         self.hash_map.get(p, None) != "wall":
                     FIFO.append(p)
                     data(point, p)
-                    time.sleep(sleep)
+                    # time.sleep(sleep)
 
             viz.add(point)
 
@@ -189,20 +195,21 @@ class Interface:
             for j in range(size):
                 x, y = i * self.rect, j * self.rect
                 if gen_map[i][j] < m2 * v0:
-                    self.paint(x, y, self.colors.RED)
+                    self.paint(x, y, self.colors.RED, False)
                     self.hash_map[(x, y)] = "wall"
                 elif gen_map[i][j] > v2 * m1:
-                    self.paint(x, y, self.colors.YELLOW)
+                    self.paint(x, y, self.colors.YELLOW, False)
                     self.hash_map[(x, y)] = "start"
 
                 elif gen_map[i][j] > v1 * m1:
-                    self.paint(x, y, self.colors.BLUE)
+                    self.paint(x, y, self.colors.BLUE, False)
                     self.hash_map[(x, y)] = "end"
                 else:
-                    self.paint(x, y, self.colors.GRAY)
+                    self.paint(x, y, self.colors.GRAY, False)
 
+        pg.display.update()
 
 
 if __name__ == '__main__':
-    interface = Interface(600, 20)
+    interface = Interface(400, 20)
     interface.loop()

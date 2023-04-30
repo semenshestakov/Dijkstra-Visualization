@@ -50,6 +50,7 @@ class Dijkstra:
                         return self.start_finish(key, stak)
                 except:
                     pass
+
     @staticmethod
     def dijkstra_gen(G, start, finish):
         for point in start:
@@ -57,10 +58,11 @@ class Dijkstra:
             try:
                 dijkstra.start_algorithm()
             except KeyError:
+                point, fin, []
                 continue
 
             for fin in finish:
                 stak = dijkstra.start_finish(fin)
                 if stak is None:
                     continue
-                yield stak
+                yield point, fin, stak
