@@ -6,6 +6,7 @@ import time
 import numpy as np
 from graphs import Graph
 
+
 class Interface:
     def __init__(self, size=400, size_rect=10):
         size = size // size_rect * size_rect
@@ -72,7 +73,7 @@ class Interface:
 
                     case pg.KEYDOWN if event.key == pg.K_TAB:
                         G, start, finish = self.sсan_window(sleep=0)
-
+                        Graph(G, start, finish).start_finish_map_visualization()
 
                         for point in start:
                             dijkstra = Dijkstra(G, point)
@@ -184,7 +185,7 @@ class Interface:
 
         pg.display.update()
 
-    def generate_map(self,v0=0.2,v1=0.7,v2=0.8):
+    def generate_map(self, v0=0.2, v1=0.7, v2=0.8):
         self.clear()
         size = self.size // self.rect
 
@@ -197,7 +198,7 @@ class Interface:
                 if gen_map[i][j] < m2 * v0:
                     self.paint(x, y, self.colors.RED)
                     self.hash_map[(x, y)] = "wall"
-                elif gen_map[i][j] > v2*m1:
+                elif gen_map[i][j] > v2 * m1:
                     self.paint(x, y, self.colors.YELLOW)
                     self.hash_map[(x, y)] = "start"
 
