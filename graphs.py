@@ -53,7 +53,23 @@ class Graph:
         plt.show()
 
     def start_finish_map_visualization(self):
-        res = np.sum(self.start_finish_map, axis=(0,1))
-        print(res.shape)
+        res = np.sum(self.start_finish_map, axis=(0, 1))
         plt.imshow(res)
         plt.show()
+
+    def stak_map_visualization(self):
+        res = np.sum(self.result_map, axis=0)
+        plt.imshow(res)
+        plt.show()
+
+
+
+    def stak_map(self, stak, step, n):
+        self.result_map = np.zeros((len(stak), n, n))
+
+        for i in range(len(stak)):
+            for elem in stak[i]:
+                x,y = elem
+                x,y = x // step , y // step
+                self.result_map[i,y,x]=1
+

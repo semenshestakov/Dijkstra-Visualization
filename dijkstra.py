@@ -1,5 +1,4 @@
 from collections import deque
-from paint import Colors
 
 
 class CreateData:
@@ -51,3 +50,17 @@ class Dijkstra:
                         return self.start_finish(key, stak)
                 except:
                     pass
+    @staticmethod
+    def dijkstra_gen(G, start, finish):
+        for point in start:
+            dijkstra = Dijkstra(G, point)
+            try:
+                dijkstra.start_algorithm()
+            except KeyError:
+                continue
+
+            for fin in finish:
+                stak = dijkstra.start_finish(fin)
+                if stak is None:
+                    continue
+                yield stak

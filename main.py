@@ -1,6 +1,4 @@
-import pygame as pg
-from dijkstra import *
-from paint import Paint, Colors
+from paint import *
 import sys
 import time
 import numpy as np
@@ -73,22 +71,17 @@ class Interface:
 
                     case pg.KEYDOWN if event.key == pg.K_TAB:
                         G, start, finish = self.sсan_window(sleep=0)
-                        Graph(G, start, finish).start_finish_map_visualization()
+                        graph = Graph(G, start, finish)
 
-                        for point in start:
-                            dijkstra = Dijkstra(G, point)
-                            try:
-                                dijkstra.start_algorithm()
-                            except KeyError:
-                                continue
+                        graph.graph_map_visualization()
+                        graph.start_finish_map_visualization()
+                        gen = Dijkstra.dijkstra_gen(G, start, finish)
+                        res = [i for i in gen]
+                        graph.stak_map(res,self.rect,self.size // self.rect)
+                        graph.stak_map_visualization()
 
-                            for fin in finish:
-                                stak = dijkstra.start_finish(fin)
-                                if stak is None:
-                                    continue
-                                for p in stak:
-                                    if p not in self.hash_map:
-                                        self.paint(*p, self.colors.GREEN)
+
+                        self.paint.dijkstra_paint(G,start,finish,self.hash_map)
 
             x, y = x // self.rect * self.rect, y // self.rect * self.rect
 
@@ -207,6 +200,7 @@ class Interface:
                     self.hash_map[(x, y)] = "end"
                 else:
                     self.paint(x, y, self.colors.GRAY)
+
 
 
 if __name__ == '__main__':
