@@ -21,11 +21,10 @@ class Data:
 
     def create_new_dataset(self):
         print(f"\n*****\nCreate New DS {self.nums}")
-        with h5py.File(self.name, 'a') as f:
-            f.create_dataset(f'graph256_{self.nums}', (1, 256, 256), maxshape=(None, 256, 256), dtype='i8')
-            f.create_dataset(f'points16_{self.nums}', (1, 16, 16), maxshape=(None, 16, 16), dtype='i8')
-            f.create_dataset(f'result16_{self.nums}', (1, 16, 16), maxshape=(None, 16, 16), dtype='i8')
-            print("\tFull Create")
+        h5py.File(self.name, 'a').create_dataset(f'graph256_{self.nums}', (1, 256, 256), maxshape=(None, 256, 256), dtype='i8')
+        h5py.File(self.name, 'a').create_dataset(f'points16_{self.nums}', (1, 16, 16), maxshape=(None, 16, 16), dtype='i8')
+        h5py.File(self.name, 'a').create_dataset(f'result16_{self.nums}', (1, 16, 16), maxshape=(None, 16, 16), dtype='i8')
+        print("\tFull Create")
 
         print(list(h5py.File(self.name, 'r')), "*****\n")
 
@@ -96,7 +95,6 @@ class Data:
         data_sets = self.return_datasets()
         dg, dp, dr = self.restruct_data(data)
 
-        f = h5py.File(self.name, 'a')
         for ds in data_sets:
             res = None
 
@@ -112,35 +110,40 @@ class Data:
             if "graph256" in ds:
                 print(f"data = shape {result.shape[0]}")
 
-            f[ds].resize(result.shape)
-            f[ds][:] = result
-        f.close()
+            h5py.File(self.name, 'a')[ds].resize(result.shape)
+            h5py.File(self.name, 'a')[ds][:] = result
 
     def config_iter(self, batch=64, get=None):
 
         self.get = get
         if get is None:
-            nums = len(h5py.File(self.name, 'r'))
-            self.get = nums // 3 + nums % 3
-
+            self.get = self.__len__()
         self.batch = batch
 
     def __gen(self):
 
+        for n in range(self.get):
+            x =  np.array(h5py.File(self.name, 'r')[f"graph256_{n}"])
+            x2 = np.array(h5py.File(self.name, 'r')[f"graph256_{n}"])
+            y = np.array(h5py.File(self.name, 'r')[f"graph256_{n}"])
+
+            if x.shape[0] != x2.shape[0] != y.shape[0]:
+                print("Не соответствует длинна")
+                continue
+
+            temp = self.batch
+            for batch in range(0, x.shape[0], self.batch):
+                yield x[batch:temp], x2[batch:temp], y[batch:temp]
+                temp = temp + self.batch
+
+    def drop_data_in_file(self, n: int):
+
         with h5py.File(self.name, 'r') as f:
-            for n in range(self.get):
-                x = f[f"graph256_{n}"]
-                x2 = f[f"graph256_{n}"]
-                y = f[f"graph256_{n}"]
+            x = f[f"graph256_{n}"]
+            x2 = f[f"graph256_{n}"]
+            y = f[f"graph256_{n}"]
 
-                if x.shape[0] != x2.shape[0] != y.shape[0]:
-                    print("Не соответствует длинна")
-                    continue
-
-                temp = self.batch
-                for batch in range(0, x.shape[0], self.batch):
-                    yield x[batch:temp], x2[batch:temp], y[batch:temp]
-                    temp = batch
+            return x, x2, y
 
     def __iter__(self):
         if not self.__dict__.get("batch", False):
@@ -151,3 +154,7 @@ class Data:
 
     def __next__(self):
         return next(self.generator)
+
+    def __len__(self):
+        nums = len(h5py.File(self.name, 'r'))
+        return nums // 3 + nums % 3
