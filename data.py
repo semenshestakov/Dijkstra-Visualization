@@ -115,3 +115,39 @@ class Data:
             f[ds].resize(result.shape)
             f[ds][:] = result
         f.close()
+
+    def config_iter(self, batch=64, get=None):
+
+        self.get = get
+        if get is None:
+            nums = len(h5py.File(self.name, 'r'))
+            self.get = nums // 3 + nums % 3
+
+        self.batch = batch
+
+    def __gen(self):
+
+        with h5py.File(self.name, 'r') as f:
+            for n in range(self.get):
+                x = f[f"graph256_{n}"]
+                x2 = f[f"graph256_{n}"]
+                y = f[f"graph256_{n}"]
+
+                if x.shape[0] != x2.shape[0] != y.shape[0]:
+                    print("Не соответствует длинна")
+                    continue
+
+                temp = self.batch
+                for batch in range(0, x.shape[0], self.batch):
+                    yield x[batch:temp], x2[batch:temp], y[batch:temp]
+                    temp = batch
+
+    def __iter__(self):
+        if not self.__dict__.get("batch", False):
+            self.config_iter()
+
+        self.generator = self.__gen()
+        return self.generator
+
+    def __next__(self):
+        return next(self.generator)

@@ -241,6 +241,7 @@ class Interface:
         pg.display.update()
         time.sleep(0.08)
 
+
 if __name__ == '__main__':
     interface = Interface(480, 30)
     interface.loop(False)
