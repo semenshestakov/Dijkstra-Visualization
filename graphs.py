@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from dijkstra import Dijkstra
 
 
-class Graph:
+class GraphViz:
 
     def __init__(self, graph, start, finish, stak, step=20, n=30):
         self.graph = graph
@@ -16,9 +16,6 @@ class Graph:
 
         self.step = step
         self.n = n
-
-        # self.start = start
-        # self.finish = finish
 
     def gen_data(self, start, finish, n):
         n1, n2 = len(start), len(finish)
@@ -99,3 +96,61 @@ class Graph:
     def return_data(self):
         sf, res = self.gen_data(self.start, self.finish, self.n)
         return self.graph_map, sf, res
+
+
+class Graph:
+
+    def __init__(self, graph: dict, step=20, n=32):
+        self.graph = self.graph_table(graph, step, n)
+
+    @staticmethod
+    def graph_table(graph, step, n):
+        """
+
+        :param graph: {key:{key:res...}...}
+        :param step:
+        :param n:
+        :return: The adjacency matrix of a graph of size N x N or the adjacency list of the graph
+              A  B  C  D
+            A 0  5  0  0
+            B 2  0  4  0
+            C 0  6  0  3
+            D 0  0  1  0
+        """
+
+        nt = n ** 2
+        table = np.zeros(shape=(n ** 2, n ** 2), dtype=np.int8)
+
+        for x1, y1 in graph:
+            # (num, num) / 20
+            key1 = x1 // step * n + y1 // step
+            for x2, y2 in graph[(x1, y1)]:
+                key2 = x2 // step * n + y2 // step
+                table[key1][key2] = 1
+                table[key2][key1] = 1
+
+        return table.reshape((1,256,256))
+
+    @staticmethod
+    def graph_table_result(graph, step, n):
+        """
+
+        :param graph: is not graph. It is array shape(None,2)
+        :param step:
+        :param n:
+        :return: array, shape = (n, n)
+        """
+        table = np.zeros(shape=(n, n), dtype=np.int8)
+        for (x, y) in graph:
+            x, y = x // step, y // step
+            table[y][x] = 1
+
+        return table.reshape((1,16,16))
+
+    @staticmethod
+    def start_finish(start, finish, step, n):
+        table = np.array([0 for i in range(n ** 2)], dtype=np.int8)
+        table[start[0] // step * n + start[0] // step] = 1
+        table[finish[0] // step * n + finish[0] // step] = 2
+
+        return table.reshape((1,16,16))

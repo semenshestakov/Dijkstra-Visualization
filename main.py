@@ -1,11 +1,9 @@
-import matplotlib.pyplot as plt
-
 from paint import *
 import sys
 import time
-import numpy as np
-from graphs import Graph
-from classcsv import *
+from graphs import GraphViz,Graph
+from data import *
+from random import uniform
 
 
 class Interface:
@@ -17,7 +15,7 @@ class Interface:
         self.sc = pg.display.set_mode((size, size))
         pg.display.set_caption("Dijkstra on Pygame - start")
 
-        self.df = CSV("data")
+        self.df = Data("data")
         self.colors = Colors
         self.paint = Paint(self.sc, self.rect)
 
@@ -77,19 +75,55 @@ class Interface:
                         G, start, finish = self.sсan_window(sleep=0)
 
                         gen = Dijkstra.dijkstra_gen(G, start, finish)
-                        res = [i[-1] for i in gen]
+                        results = [i for i in gen] # start finish stak
 
-                        graph = Graph(G, start, finish, res, self.rect, self.size // self.rect)
-                        # graph.graph_map_visualization()
-                        # graph.start_finish_map_visualization()
-                        # graph.stak_map_visualization()
+                        graph = Graph(G,self.rect,self.size // self.rect)
 
-                        g, p, s = graph.return_data()
-                        self.df.write(g, p, s)
+                        data = [
+                            (
+                                graph.graph,
+                                graph.start_finish(s,f,self.rect,self.size // self.rect),
+                                graph.graph_table_result(r,self.rect,self.size // self.rect)
+                            )
+                            for s,f,r in results
+                        ]
+                        print(len(data))
+                        self.df.write(data)
 
                         self.paint.dijkstra_paint(G, start, finish, self.hash_map)
                         pg.display.update()
             x, y = x // self.rect * self.rect, y // self.rect * self.rect
+
+
+            ### temp
+            # self.generate_map()
+            # G, start, finish = self.sсan_window(sleep=0)
+            #
+            # gen = Dijkstra.dijkstra_gen(G, start, finish)
+            # results = [i for i in gen]  # start finish stak
+            #
+            # graph = Graph(G, self.rect, self.size // self.rect)
+            #
+            # data = [
+            #     (
+            #         graph.graph,
+            #         graph.start_finish(s, f, self.rect, self.size // self.rect),
+            #         graph.graph_table_result(r, self.rect, self.size // self.rect)
+            #     )
+            #     for s, f, r in results
+            # ]
+            # print(len(data))
+            # self.df.write(data)
+            #
+            # self.paint.dijkstra_paint(G, start, finish, self.hash_map)
+            # pg.display.update()
+            # time.sleep(0.08)
+
+            ### temp
+
+
+
+
 
             if fldel and fldraw:
                 self.paint(x, y, self.colors.GRAY)
@@ -150,7 +184,6 @@ class Interface:
                         self.hash_map.get(p, None) != "wall":
                     FIFO.append(p)
                     data(point, p)
-                    # time.sleep(sleep)
 
             viz.add(point)
 
@@ -190,6 +223,8 @@ class Interface:
 
         gen_map = np.random.normal(size=(size, size))
         m1, m2 = np.max(gen_map), np.min(gen_map)
+        v0, v1, v2 = uniform(0.15,0.25), uniform(0.35, 0.55), uniform(0.55, 0.75)
+        # чем v1 v2 < тем больше точке
 
         for i in range(size):
             for j in range(size):
@@ -211,5 +246,5 @@ class Interface:
 
 
 if __name__ == '__main__':
-    interface = Interface(400, 20)
+    interface = Interface(480, 30)
     interface.loop()

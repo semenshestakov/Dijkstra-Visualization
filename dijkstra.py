@@ -58,7 +58,8 @@ class Dijkstra:
             try:
                 dijkstra.start_algorithm()
             except KeyError:
-                point, fin, []
+                for fin in finish:
+                    yield point, fin, []
                 continue
 
             for fin in finish:
