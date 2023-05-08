@@ -1,7 +1,7 @@
 from paint import *
 import sys
 import time
-from graphs import GraphViz,Graph
+from graphs import GraphViz, Graph
 from data import *
 from random import uniform
 
@@ -19,7 +19,7 @@ class Interface:
         self.colors = Colors
         self.paint = Paint(self.sc, self.rect)
 
-    def loop(self):
+    def loop(self, fl_gen_data: bool = False):
         x, y = 0, 0
         self.clear()
         clock = pg.time.Clock()
@@ -75,55 +75,27 @@ class Interface:
                         G, start, finish = self.sсan_window(sleep=0)
 
                         gen = Dijkstra.dijkstra_gen(G, start, finish)
-                        results = [i for i in gen] # start finish stak
+                        results = [i for i in gen]  # start finish stak
 
-                        graph = Graph(G,self.rect,self.size // self.rect)
+                        graph = Graph(G, self.rect, self.size // self.rect)
 
                         data = [
                             (
                                 graph.graph,
-                                graph.start_finish(s,f,self.rect,self.size // self.rect),
-                                graph.graph_table_result(r,self.rect,self.size // self.rect)
+                                graph.start_finish(s, f, self.rect, self.size // self.rect),
+                                graph.graph_table_result(r, self.rect, self.size // self.rect)
                             )
-                            for s,f,r in results
+                            for s, f, r in results
                         ]
                         print(len(data))
-                        self.df.write(data)
+                        # self.df.write(data)
 
                         self.paint.dijkstra_paint(G, start, finish, self.hash_map)
                         pg.display.update()
             x, y = x // self.rect * self.rect, y // self.rect * self.rect
 
-
-            ### temp
-            # self.generate_map()
-            # G, start, finish = self.sсan_window(sleep=0)
-            #
-            # gen = Dijkstra.dijkstra_gen(G, start, finish)
-            # results = [i for i in gen]  # start finish stak
-            #
-            # graph = Graph(G, self.rect, self.size // self.rect)
-            #
-            # data = [
-            #     (
-            #         graph.graph,
-            #         graph.start_finish(s, f, self.rect, self.size // self.rect),
-            #         graph.graph_table_result(r, self.rect, self.size // self.rect)
-            #     )
-            #     for s, f, r in results
-            # ]
-            # print(len(data))
-            # self.df.write(data)
-            #
-            # self.paint.dijkstra_paint(G, start, finish, self.hash_map)
-            # pg.display.update()
-            # time.sleep(0.08)
-
-            ### temp
-
-
-
-
+            if fl_gen_data:
+                self.gen_data()
 
             if fldel and fldraw:
                 self.paint(x, y, self.colors.GRAY)
@@ -223,7 +195,7 @@ class Interface:
 
         gen_map = np.random.normal(size=(size, size))
         m1, m2 = np.max(gen_map), np.min(gen_map)
-        v0, v1, v2 = uniform(0.15,0.25), uniform(0.35, 0.55), uniform(0.55, 0.75)
+        v0, v1, v2 = uniform(0.15, 0.25), uniform(0.35, 0.55), uniform(0.55, 0.75)
         # чем v1 v2 < тем больше точке
 
         for i in range(size):
@@ -244,7 +216,31 @@ class Interface:
 
         pg.display.update()
 
+    def gen_data(self,):
+
+        self.generate_map()
+        G, start, finish = self.sсan_window(sleep=0)
+
+        gen = Dijkstra.dijkstra_gen(G, start, finish)
+        results = [i for i in gen]  # start finish stak
+
+        graph = Graph(G, self.rect, self.size // self.rect)
+
+        data = [
+            (
+                graph.graph,
+                graph.start_finish(s, f, self.rect, self.size // self.rect),
+                graph.graph_table_result(r, self.rect, self.size // self.rect)
+            )
+            for s, f, r in results
+        ]
+        print(len(data))
+        self.df.write(data)
+
+        self.paint.dijkstra_paint(G, start, finish, self.hash_map)
+        pg.display.update()
+        time.sleep(0.08)
 
 if __name__ == '__main__':
     interface = Interface(480, 30)
-    interface.loop()
+    interface.loop(False)
