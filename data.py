@@ -21,12 +21,15 @@ class Data:
 
     def create_new_dataset(self):
         print(f"\n*****\nCreate New DS {self.nums}")
-        h5py.File(self.name, 'a').create_dataset(f'graph256_{self.nums}', (1, 256, 256), maxshape=(None, 256, 256), dtype='i8')
-        h5py.File(self.name, 'a').create_dataset(f'points16_{self.nums}', (1, 16, 16), maxshape=(None, 16, 16), dtype='i8')
-        h5py.File(self.name, 'a').create_dataset(f'result16_{self.nums}', (1, 16, 16), maxshape=(None, 16, 16), dtype='i8')
+        h5py.File(self.name, 'a').create_dataset(f'graph256_{self.nums}', (1, 256, 256), maxshape=(None, 256, 256),
+                                                 dtype='i8')
+        h5py.File(self.name, 'a').create_dataset(f'points16_{self.nums}', (1, 16, 16), maxshape=(None, 16, 16),
+                                                 dtype='i8')
+        h5py.File(self.name, 'a').create_dataset(f'result16_{self.nums}', (1, 16, 16), maxshape=(None, 16, 16),
+                                                 dtype='i8')
         print("\tFull Create")
 
-        print(list(h5py.File(self.name, 'r')), "*****\n")
+        print(list(h5py.File(self.name, 'r')), "\n*****\n")
 
     def status_data_set(self):
         try:
@@ -105,16 +108,13 @@ class Data:
             elif "result16" in ds:
                 res = dr
 
-            # result = np.append(data_sets[ds], np.array(res), axis=0)
             size_ds = data_sets[ds].shape[0]
             size_res = res.shape[0]
-            temp = tuple([size_ds + size_res ,*data_sets[ds].shape[1:]])
+            temp = tuple([size_ds + size_res, *data_sets[ds].shape[1:]])
             if "graph256" in ds:
                 print(f"data = shape {temp}")
-                print(h5py.File(self.name, 'r')[ds][size_ds:].shape, res.shape, size_ds)
 
             h5py.File(self.name, 'a')[ds].resize(temp)
-            print(h5py.File(self.name, 'a')[ds][size_ds:].shape)
             h5py.File(self.name, 'a')[ds][size_ds:] = res
 
     def config_iter(self, batch=64, get=None):
@@ -127,7 +127,7 @@ class Data:
     def __gen(self):
 
         for n in range(self.get):
-            x =  h5py.File(self.name, 'r')[f"graph256_{n}"]
+            x = h5py.File(self.name, 'r')[f"graph256_{n}"]
             x2 = h5py.File(self.name, 'r')[f"points16_{n}"]
             y = h5py.File(self.name, 'r')[f"result16_{n}"]
 

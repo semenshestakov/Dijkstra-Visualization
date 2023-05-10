@@ -88,8 +88,7 @@ class Interface:
                             for s, f, r in results
                         ]
                         print(len(data))
-                        # self.df.write(data)
-
+                        self.df.write(data)
                         self.paint.dijkstra_paint(G, start, finish, self.hash_map)
                         pg.display.update()
             x, y = x // self.rect * self.rect, y // self.rect * self.rect
@@ -195,7 +194,7 @@ class Interface:
 
         gen_map = np.random.normal(size=(size, size))
         m1, m2 = np.max(gen_map), np.min(gen_map)
-        v0, v1, v2 = uniform(0.15, 0.25), uniform(0.35, 0.55), uniform(0.55, 0.75)
+        v0, v1, v2 = uniform(0.15, 0.25), uniform(0.45, 0.65), uniform(0.65, 0.75)
         # чем v1 v2 < тем больше точке
 
         for i in range(size):
@@ -216,7 +215,7 @@ class Interface:
 
         pg.display.update()
 
-    def gen_data(self,):
+    def gen_data(self, ):
 
         self.generate_map()
         G, start, finish = self.sсan_window(sleep=0)
@@ -244,4 +243,4 @@ class Interface:
 
 if __name__ == '__main__':
     interface = Interface(480, 30)
-    interface.loop(True)
+    interface.loop(False)
