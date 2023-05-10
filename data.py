@@ -51,7 +51,7 @@ class Data:
         """
 
         ds = {
-            f'{i}_{self.nums}': np.array(h5py.File(self.name, 'r')[f'{i}_{self.nums}'])
+            f'{i}_{self.nums}': h5py.File(self.name, 'a')[f'{i}_{self.nums}']
             for i in ("graph256", "points16", "result16")
         }
 
@@ -100,18 +100,22 @@ class Data:
 
             if "graph256" in ds:
                 res = dg
-
             elif "points16" in ds:
                 res = dp
             elif "result16" in ds:
                 res = dr
 
-            result = np.append(data_sets[ds], res, axis=0)
+            # result = np.append(data_sets[ds], np.array(res), axis=0)
+            size_ds = data_sets[ds].shape[0]
+            size_res = res.shape[0]
+            temp = tuple([size_ds + size_res ,*data_sets[ds].shape[1:]])
             if "graph256" in ds:
-                print(f"data = shape {result.shape[0]}")
+                print(f"data = shape {temp}")
+                print(h5py.File(self.name, 'r')[ds][size_ds:].shape, res.shape, size_ds)
 
-            h5py.File(self.name, 'a')[ds].resize(result.shape)
-            h5py.File(self.name, 'a')[ds][:] = result
+            h5py.File(self.name, 'a')[ds].resize(temp)
+            print(h5py.File(self.name, 'a')[ds][size_ds:].shape)
+            h5py.File(self.name, 'a')[ds][size_ds:] = res
 
     def config_iter(self, batch=64, get=None):
 
@@ -123,9 +127,9 @@ class Data:
     def __gen(self):
 
         for n in range(self.get):
-            x =  np.array(h5py.File(self.name, 'r')[f"graph256_{n}"])
-            x2 = np.array(h5py.File(self.name, 'r')[f"graph256_{n}"])
-            y = np.array(h5py.File(self.name, 'r')[f"graph256_{n}"])
+            x =  h5py.File(self.name, 'r')[f"graph256_{n}"]
+            x2 = h5py.File(self.name, 'r')[f"points16_{n}"]
+            y = h5py.File(self.name, 'r')[f"result16_{n}"]
 
             if x.shape[0] != x2.shape[0] != y.shape[0]:
                 print("Не соответствует длинна")
@@ -139,9 +143,9 @@ class Data:
     def drop_data_in_file(self, n: int):
 
         with h5py.File(self.name, 'r') as f:
-            x = f[f"graph256_{n}"]
-            x2 = f[f"graph256_{n}"]
-            y = f[f"graph256_{n}"]
+            x = h5py.File(self.name, 'r')[f"graph256_{n}"]
+            x2 = h5py.File(self.name, 'r')[f"points16_{n}"]
+            y = h5py.File(self.name, 'r')[f"result16_{n}"]
 
             return x, x2, y
 
