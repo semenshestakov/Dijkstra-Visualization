@@ -4,10 +4,12 @@ import numpy as np
 
 class Data:
 
-    def __init__(self, name, max_size: int = 10_000):
+    def __init__(self, name, max_size: int = 10_000, size_data_gen: int = 40_000):
         self.max_size = max_size
         self.name = f"{name}.h5"
         self.nums_files_name()
+        self.size_data_gen = size_data_gen
+        self.temp = 0
 
     def nums_files_name(self):
         try:
@@ -21,12 +23,21 @@ class Data:
 
     def create_new_dataset(self):
         print(f"\n*****\nCreate New DS {self.nums}")
-        h5py.File(self.name, 'a').create_dataset(f'graph256_{self.nums}', (1, 256, 256), maxshape=(None, 256, 256),
-                                                 dtype='i8')
-        h5py.File(self.name, 'a').create_dataset(f'points16_{self.nums}', (1, 16, 16), maxshape=(None, 16, 16),
-                                                 dtype='i8')
-        h5py.File(self.name, 'a').create_dataset(f'result16_{self.nums}', (1, 16, 16), maxshape=(None, 16, 16),
-                                                 dtype='i8')
+        h5py.File(self.name, 'a').create_dataset(f'graph256_{self.nums}',
+                                                 (1, 256, 256),
+                                                 maxshape=(None, 256, 256),
+                                                 dtype='i8'
+                                                 )
+        h5py.File(self.name, 'a').create_dataset(f'points16_{self.nums}',
+                                                 (1, 16, 16),
+                                                 maxshape=(None, 16, 16),
+                                                 dtype='i8'
+                                                 )
+        h5py.File(self.name, 'a').create_dataset(f'result16_{self.nums}',
+                                                 (1, 16, 16),
+                                                 maxshape=(None, 16, 16),
+                                                 dtype='i8'
+                                                 )
         print("\tFull Create")
 
         print(list(h5py.File(self.name, 'r')), "\n*****\n")
@@ -94,6 +105,10 @@ class Data:
         except KeyError:
             print(list(h5py.File(self.name, 'r')))
             raise KeyError
+
+        self.temp += len(data)
+        if self.temp > self.size_data_gen:
+            raise type("SizeBaseError", (Exception,), {})(f"Ограничение сработало, алгоритм сгенерировал {self.temp}") from None
 
         data_sets = self.return_datasets()
         dg, dp, dr = self.restruct_data(data)

@@ -129,7 +129,7 @@ class Graph:
                 table[key1][key2] = 1
                 table[key2][key1] = 1
 
-        return table.reshape((1,256,256))
+        return table.reshape((1, 256, 256))
 
     @staticmethod
     def graph_table_result(graph, step, n):
@@ -145,12 +145,15 @@ class Graph:
             x, y = x // step, y // step
             table[y][x] = 1
 
-        return table.reshape((1,16,16))
+        return table.reshape((1, 16, 16))
 
     @staticmethod
     def start_finish(start, finish, step, n):
-        table = np.array([0 for i in range(n ** 2)], dtype=np.int8)
-        table[start[0] // step * n + start[0] // step] = 1
-        table[finish[0] // step * n + finish[0] // step] = 2
 
-        return table.reshape((1,16,16))
+        table = np.zeros((n, n), dtype=np.int8)
+        x1, y1 = start[0] // step, start[1] // step
+        x2, y2 = finish[0] // step, finish[1] // step
+        table[y1][x1] = 1
+        table[y2][x2] = 1
+
+        return table.reshape((1, 16, 16))
