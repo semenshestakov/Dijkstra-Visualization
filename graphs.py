@@ -101,7 +101,7 @@ class GraphViz:
 class Graph:
 
     def __init__(self, graph: dict, step=20, n=32):
-        self.graph = self.graph_table(graph, step, n)
+        self.graph = self.graph_table(graph, step, n) if graph else {}
 
     @staticmethod
     def graph_table(graph, step, n):
@@ -157,3 +157,22 @@ class Graph:
         table[y2][x2] = 1
 
         return table.reshape((1, 16, 16))
+
+    @staticmethod
+    def merge_graph_points(graph: np.array, points: np.array):
+        assert points.shape[0] == graph.shape[0]
+
+        graph = np.array(graph).copy()
+        points = np.array(points).copy()
+        points.shape = (points.shape[0], -1)
+        for i in range(points.shape[0]):
+            m1, m2 = -float("inf"), -float("inf")
+            n1, n2 = None, None
+            for j in range(points.shape[1]):
+                n1 = j if n2 is None and points[i][j] > m1 else n1
+                m1 = points[i][j] if n1 == j else m1
+                n2 = j if points[i][j] > m2 and n1 != j else n2
+                m2 = points[i][j] if n2 == j else m2
+
+            graph[i, [n1, n2], [n1, n2]] = 2
+        return graph

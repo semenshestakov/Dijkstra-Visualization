@@ -3,12 +3,12 @@ from dijkstra import *
 
 
 class Colors:
-    YELLOW = (244, 202, 22)
-    RED = (255, 21, 61)
+    STARTP = (218,112,214)     # (244, 202, 22)
+    WALLS = (255,69,0)       # (255, 21, 61)
     BLACK = (0, 0, 0)
-    BLUE = (0, 107, 200)
+    FINISHP = (0,191,255)     # (0, 107, 200)
     WHITE = (255, 255, 255)
-    GREEN = (124, 252, 0)
+    WAY = (124, 252, 0)         # (124, 252, 0)
     GRAY = (105, 105, 105)
 
 
@@ -33,4 +33,4 @@ class Paint:
         for s in staks:
             for p in s:
                 if p not in hash_map:
-                    self(*p, Colors.GREEN, False)
+                    self(*p, Colors.WAY, False)

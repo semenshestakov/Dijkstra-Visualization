@@ -102,15 +102,15 @@ class Interface:
                     del self.hash_map[(x, y)]
 
             elif flend and fldraw:
-                self.paint(x, y, self.colors.BLUE)
+                self.paint(x, y, self.colors.FINISHP)
                 self.hash_map[(x, y)] = "end"
 
             elif flstart and fldraw:
-                self.paint(x, y, self.colors.YELLOW)
+                self.paint(x, y, self.colors.STARTP)
                 self.hash_map[(x, y)] = "start"
 
             elif flwall and fldraw:
-                self.paint(x, y, self.colors.RED)
+                self.paint(x, y, self.colors.WALLS)
                 self.hash_map[(x, y)] = "wall"
 
             clock.tick(120)
@@ -201,14 +201,14 @@ class Interface:
             for j in range(size):
                 x, y = i * self.rect, j * self.rect
                 if gen_map[i][j] < m2 * v0:
-                    self.paint(x, y, self.colors.RED, False)
+                    self.paint(x, y, self.colors.WALLS, False)
                     self.hash_map[(x, y)] = "wall"
                 elif gen_map[i][j] > v2 * m1:
-                    self.paint(x, y, self.colors.YELLOW, False)
+                    self.paint(x, y, self.colors.STARTP, False)
                     self.hash_map[(x, y)] = "start"
 
                 elif gen_map[i][j] > v1 * m1:
-                    self.paint(x, y, self.colors.BLUE, False)
+                    self.paint(x, y, self.colors.FINISHP, False)
                     self.hash_map[(x, y)] = "end"
                 else:
                     self.paint(x, y, self.colors.GRAY, False)
