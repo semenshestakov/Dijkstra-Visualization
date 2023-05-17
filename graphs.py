@@ -169,10 +169,14 @@ class Graph:
             m1, m2 = -float("inf"), -float("inf")
             n1, n2 = None, None
             for j in range(points.shape[1]):
-                n1 = j if n2 is None and points[i][j] > m1 else n1
+                n1 = j if n2 is None and 0 != points[i][j] > m1 else n1
                 m1 = points[i][j] if n1 == j else m1
-                n2 = j if points[i][j] > m2 and n1 != j else n2
+                n2 = j if 0 != points[i][j] > m2 and n1 != j else n2
                 m2 = points[i][j] if n2 == j else m2
 
-            graph[i, [n1, n2], [n1, n2]] = 2
+            if n1 is not None:
+                graph[i, n1, n1] = 2
+
+            if n2 is not None:
+                graph[i, n2, n2] = 2
         return graph

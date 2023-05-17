@@ -6,9 +6,8 @@ import numpy as np
 class TestGraphFunc(unittest.TestCase):
     def setUp(self):
         self.graph = graphs.Graph({})
-        pass
 
-    def test_merge_graph_points(self):
+    def test_1merge_graph_points(self):
         test_graph = np.zeros((1, 9, 9), dtype=float)
         test_point = np.zeros((1, 3, 3), dtype=float)
 
@@ -21,9 +20,28 @@ class TestGraphFunc(unittest.TestCase):
 
 
         result = self.graph.merge_graph_points(test_graph, test_point)
-        print(result == res)
-        self.assertEqual(result,(result == res).all())
+        self.assertEqual(True,(result == res).all())
+
+    def test_2merge_graph_points(self):
+        test_graph = np.zeros((1, 9, 9), dtype=float)
+        test_point = np.zeros((1, 3, 3), dtype=float)
+
+        test_point[0, 1, 2] = 1
+        res = np.zeros((1, 9, 9), dtype=float)
+        res[0,5,5] = 2
+
+        result = self.graph.merge_graph_points(test_graph, test_point)
+        self.assertEqual(True, (result == res).all())
+
+    def test_3merge_graph_points(self):
+        test_graph = np.zeros((1, 9, 9), dtype=float)
+        test_point = np.zeros((1, 3, 3), dtype=float)
+
+        res = np.zeros((1, 9, 9), dtype=float)
+        result = self.graph.merge_graph_points(test_graph, test_point)
+
+        self.assertEqual(True, (result == res).all())
 
 
 if __name__ == '__main__':
-    unittest.main
+    unittest.main()
