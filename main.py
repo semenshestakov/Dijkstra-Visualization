@@ -73,24 +73,30 @@ class Interface:
 
                     case pg.KEYDOWN if event.key == pg.K_TAB:
                         G, start, finish = self.sсan_window(sleep=0)
-
+                        Dijkstra.ways = []
+                        print(start)
                         gen = Dijkstra.dijkstra_gen(G, start, finish)
-                        results = [i for i in gen]  # start finish stak
 
-                        graph = Graph(G, self.rect, self.size // self.rect)
+                        result = [i for i in gen]  # start finish ways
+                        # print(Dijkstra.ways)
 
-                        data = [
-                            (
-                                graph.graph,
-                                graph.start_finish(s, f, self.rect, self.size // self.rect),
-                                graph.graph_table_result(r, self.rect, self.size // self.rect)
-                            )
-                            for s, f, r in results
-                        ]
-                        print(len(data))
-                        self.df.write(data)
-                        self.paint.dijkstra_paint(G, start, finish, self.hash_map)
+                        # graph = Graph(G, self.rect, self.size // self.rect)
+
+                        # data = [
+                        #     (
+                        #         graph.graph,
+                        #         graph.start_finish(s, f, self.rect, self.size // self.rect),
+                        #         graph.graph_table_result(r, self.rect, self.size // self.rect)
+                        #     )
+                        #     for s, f, r in results
+                        # ]
+                        # print(len(data))
+                        # self.df.write(data)
+
+                        for i in result:
+                            self.paint.dijkstra_paint(i[2], self.hash_map)
                         pg.display.update()
+
             x, y = x // self.rect * self.rect, y // self.rect * self.rect
 
             if fl_gen_data:

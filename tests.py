@@ -42,6 +42,5 @@ class TestGraphFunc(unittest.TestCase):
 
         self.assertEqual(True, (result == res).all())
 
-
 if __name__ == '__main__':
     unittest.main()

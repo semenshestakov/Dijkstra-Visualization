@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from dijkstra import Dijkstra
+from random import randint
 
 
 class GraphViz:
@@ -180,3 +181,42 @@ class Graph:
             if n2 is not None:
                 graph[i, n2, n2] = 2
         return graph
+
+    @staticmethod
+    def merge_graph_way(graph, points):
+        z = points.shape[1] ** 2
+        points.shape = (-1, z)
+
+        summ = int(np.sum(points) * 2)
+        x = np.zeros((summ + 1000, z, z), dtype=np.float32)
+        y = np.zeros((summ + 1000,), dtype=np.float32)
+
+        k = 0
+        for i in range(graph.shape[0]):
+            res_sum = int(np.sum(points[i]))
+            for j in range(points.shape[1]):
+                if points[i][j] == 1.0 or points[i][j] == 1:
+                    x[k] = graph[i]
+                    x[k, j, j] = -1
+                    y[k] = points[i][j]
+                    k += 1
+                elif randint(1, z - res_sum) <= res_sum:
+                    x[k] = graph[i]
+                    x[k, j, j] = -1
+                    y[k] = points[i][j]
+                    k += 1
+        return x[:k - 1], y[:k - 1]
+
+
+if __name__ == '__main__':
+    s = 100000
+    f = 0
+    for j in range(s):
+        test_graph = np.zeros((1, 256, 256), dtype=float)
+        test_point = np.zeros((1, 16, 16), dtype=float)
+        test_point[0, [0, 0, 1, 1, 1, 2], [0, 1, 1, 2, 3, 3]] = 1
+
+        _, _, k = Graph.merge_graph_way(test_graph, test_point)
+        f += k
+
+    print(f / s)
