@@ -23,9 +23,9 @@ class Data:
 
     def create_new_dataset(self):
         print(f"\n*****\nCreate New DS {self.nums}")
-        h5py.File(self.name, 'a').create_dataset(f'graph256_{self.nums}',
-                                                 (1, 256, 256),
-                                                 maxshape=(None, 256, 256),
+        h5py.File(self.name, 'a').create_dataset(f'graph16_{self.nums}',
+                                                 (1, 16, 16),
+                                                 maxshape=(None, 16, 16),
                                                  dtype='i8'
                                                  )
         h5py.File(self.name, 'a').create_dataset(f'points16_{self.nums}',
@@ -58,7 +58,7 @@ class Data:
     def return_datasets(self) -> dict:
         """
         :return:  dict {
-                        graph256_{self.nums} : data graph - np.array , shape = (None, 256, 256)
+                        graph256_{self.nums} : data graph - np.array , shape = (None, 16, 16)
                         points16_{self.nums} : data points - np.array , shape = (None, 16, 16)
                         result16_{self.nums} : data result - np.array , shape = (None, 16, 16)
                     }
@@ -66,7 +66,7 @@ class Data:
 
         ds = {
             f'{i}_{self.nums}': h5py.File(self.name, 'a')[f'{i}_{self.nums}']
-            for i in ("graph256", "points16", "result16")
+            for i in ("graph16", "points16", "result16")
         }
 
         return ds
@@ -75,7 +75,7 @@ class Data:
     def restruct_data(data) -> tuple:
 
         nums = len(data)
-        new_graph = np.zeros((nums, 256, 256), dtype=np.int8)
+        new_graph = np.zeros((nums, 16,16), dtype=np.int8)
         new_points = np.zeros((nums, 16, 16), dtype=np.int8)
         new_result = np.zeros((nums, 16, 16), dtype=np.int8)
 
@@ -92,7 +92,7 @@ class Data:
         """
          data = [
             (
-                graph.graph,                1 256 256
+                graph.graph,                1 16 16
                 graph.start_finish,         1 16 16
                 graph.graph_table_result    1 16 16
             )
@@ -108,7 +108,8 @@ class Data:
 
         self.temp += len(data)
         if self.temp > self.size_data_gen:
-            raise type("SizeBaseError", (Exception,), {})(f"Ограничение сработало, алгоритм сгенерировал {self.temp}") from None
+            raise type("SizeBaseError", (Exception,), {})(
+                f"Ограничение сработало, алгоритм сгенерировал {self.temp}") from None
 
         data_sets = self.return_datasets()
         dg, dp, dr = self.restruct_data(data)
@@ -116,7 +117,7 @@ class Data:
         for ds in data_sets:
             res = None
 
-            if "graph256" in ds:
+            if "graph16" in ds:
                 res = dg
             elif "points16" in ds:
                 res = dp
@@ -126,7 +127,7 @@ class Data:
             size_ds = data_sets[ds].shape[0]
             size_res = res.shape[0]
             temp = tuple([size_ds + size_res, *data_sets[ds].shape[1:]])
-            if "graph256" in ds:
+            if "graph16" in ds:
                 print(f"data = shape {temp}")
 
             h5py.File(self.name, 'a')[ds].resize(temp)
@@ -142,7 +143,7 @@ class Data:
     def __gen(self):
 
         for n in range(self.get):
-            x = h5py.File(self.name, 'r')[f"graph256_{n}"]
+            x = h5py.File(self.name, 'r')[f"graph16_{n}"]
             x2 = h5py.File(self.name, 'r')[f"points16_{n}"]
             y = h5py.File(self.name, 'r')[f"result16_{n}"]
 
@@ -158,7 +159,7 @@ class Data:
     def drop_data_in_file(self, n: int):
 
         with h5py.File(self.name, 'r') as f:
-            x = h5py.File(self.name, 'r')[f"graph256_{n}"]
+            x = h5py.File(self.name, 'r')[f"graph16_{n}"]
             x2 = h5py.File(self.name, 'r')[f"points16_{n}"]
             y = h5py.File(self.name, 'r')[f"result16_{n}"]
 

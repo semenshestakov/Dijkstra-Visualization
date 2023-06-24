@@ -102,7 +102,8 @@ class GraphViz:
 class Graph:
 
     def __init__(self, graph: dict, step=20, n=32):
-        self.graph = self.graph_table(graph, step, n) if graph else {}
+        # self.graph = self.graph_table(graph, step, n) if graph else {}
+        self.graph = self.graph_to_map(graph, step, n) if graph else {}
 
     @staticmethod
     def graph_table(graph, step, n):
@@ -206,6 +207,26 @@ class Graph:
                     y[k] = points[i][j]
                     k += 1
         return x[:k - 1], y[:k - 1]
+
+    def graph_to_map(self, graph, step, n):
+        graph_map = np.zeros((n, n), dtype=np.int8)
+        """
+        graph struct:
+            dict{
+                (int,int):dict{
+                            (int,int):1, ...
+                            }, ..
+                }
+        """
+        for key_node in graph:
+            x, y = key_node
+            y, x = x // step, y // step
+            graph_map[x][y] = 1
+            for sub_node in graph[key_node]:
+                x1, y1 = sub_node
+                y1, x1 = x1 // step, y1 // step
+                graph_map[x1][y1] = 1
+        return graph_map
 
 
 if __name__ == '__main__':

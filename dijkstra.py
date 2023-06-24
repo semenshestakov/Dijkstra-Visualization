@@ -5,7 +5,6 @@ class CreateData:
     def __init__(self):
         self.G = {}
 
-
     def __call__(self, p1, p2):
         if self.G.get(p1, False) is False:
             self.G[p1] = {}
@@ -18,8 +17,9 @@ class CreateData:
 
 
 class Dijkstra:
-    ways = []
-    def __init__(self, G = {}, start = None):
+    ways = {}
+
+    def __init__(self, G={}, start=None):
         self.G = G
         self.Gm = {k: None for k in self.G}
         self.Gm[start] = 0
@@ -45,9 +45,13 @@ class Dijkstra:
         stak = [] if stak is ... else stak[:]
         stak.append(finish)
         if self.start == finish:
-            Dijkstra.ways.extend(stak)
+            for i in stak:
+                Dijkstra.ways[i] = True
 
-
+        if Dijkstra.ways.get(finish, False):
+            for i in stak:
+                Dijkstra.ways[i] = True
+            return
 
         if finish in self.G:
             for key, value in self.G[finish].items():
@@ -65,7 +69,7 @@ class Dijkstra:
                 dijkstra.start_algorithm()
             except KeyError:
                 for fin in finish:
-                    yield point, fin, []
+                    yield point, fin, {}
                 continue
 
             for fin in finish:
@@ -73,3 +77,4 @@ class Dijkstra:
                 if dijkstra.ways is None:
                     continue
                 yield point, fin, dijkstra.ways
+                Dijkstra.ways = {}
