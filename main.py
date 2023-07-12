@@ -19,7 +19,7 @@ class Interface:
         self.colors = Colors
         self.paint = Paint(self.sc, self.rect)
 
-    def loop(self, fl_gen_data: bool = False):
+    def loop(self, fl_gen_data: bool = False, fl_wite: bool = False):
         x, y = 0, 0
         self.clear()
         clock = pg.time.Clock()
@@ -73,24 +73,27 @@ class Interface:
 
                     case pg.KEYDOWN if event.key == pg.K_TAB:
                         G, start, finish = self.sсan_window(sleep=0)
-
+                        Dijkstra.ways = {}
                         gen = Dijkstra.dijkstra_gen(G, start, finish)
-                        results = [i for i in gen]  # start finish stak
+
+                        results = [i for i in gen]  # start finish ways
 
                         graph = Graph(G, self.rect, self.size // self.rect)
-
-                        data = [
-                            (
-                                graph.graph,
-                                graph.start_finish(s, f, self.rect, self.size // self.rect),
-                                graph.graph_table_result(r, self.rect, self.size // self.rect)
-                            )
-                            for s, f, r in results
-                        ]
-                        print(len(data))
-                        self.df.write(data)
-                        self.paint.dijkstra_paint(G, start, finish, self.hash_map)
+                        if fl_wite:
+                            data = [
+                                (
+                                    graph.graph,
+                                    graph.start_finish(s, f, self.rect, self.size // self.rect),
+                                    graph.graph_table_result(r.keys(), self.rect, self.size // self.rect)
+                                )
+                                for s, f, r in results
+                            ]
+                            self.df.write(data)
+                            print(len(data))
+                        for i in results:
+                            self.paint.dijkstra_paint(i[-1], self.hash_map)
                         pg.display.update()
+
             x, y = x // self.rect * self.rect, y // self.rect * self.rect
 
             if fl_gen_data:
@@ -220,27 +223,29 @@ class Interface:
         self.generate_map()
         G, start, finish = self.sсan_window(sleep=0)
 
+        Dijkstra.ways = {}
         gen = Dijkstra.dijkstra_gen(G, start, finish)
-        results = [i for i in gen]  # start finish stak
+
+        results = [i for i in gen]  # start finish ways
 
         graph = Graph(G, self.rect, self.size // self.rect)
-
         data = [
             (
                 graph.graph,
                 graph.start_finish(s, f, self.rect, self.size // self.rect),
-                graph.graph_table_result(r, self.rect, self.size // self.rect)
+                graph.graph_table_result(r.keys(), self.rect, self.size // self.rect)
             )
             for s, f, r in results
         ]
-        print(len(data))
         self.df.write(data)
+        print(len(data))
 
-        self.paint.dijkstra_paint(G, start, finish, self.hash_map)
+        for i in results:
+            self.paint.dijkstra_paint(i[2].keys(), self.hash_map)
         pg.display.update()
         time.sleep(0.08)
 
 
 if __name__ == '__main__':
     interface = Interface(480, 30)
-    interface.loop(not True)
+    interface.loop(not True,not True)
