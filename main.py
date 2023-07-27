@@ -242,8 +242,8 @@ class Interface:
 
         for i in results:
             self.paint.dijkstra_paint(i[2].keys(), self.hash_map)
-        pg.display.update()
         time.sleep(0.08)
+        pg.display.update()
 
 
 if __name__ == '__main__':
